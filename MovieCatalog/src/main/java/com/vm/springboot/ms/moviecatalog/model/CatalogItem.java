@@ -1,5 +1,4 @@
 package com.vm.springboot.ms.moviecatalog.model;
-
 public class CatalogItem {
 	
 	private String name;
