@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.vm.springboot.ms.moviecatalog.model.CatalogItem;
 import com.vm.springboot.ms.moviecatalog.model.Movie;
-import com.vm.springboot.ms.moviecatalog.model.Rating;
+import com.vm.springboot.ms.moviecatalog.model.UserRating;
 
 
 @RestController
@@ -25,16 +25,14 @@ public class MovieCatalogResource {
 	@RequestMapping("/{userId}")
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
 		//1. get all the rated movie ids freom the ratings service
-
-		List<Rating> ratingsBag = Arrays.asList(
-				new Rating("1234",4),
-				new Rating("5678",3)				
-				);
+		UserRating ratings = restTemplate.getForObject("http://localhost:8082/ratingsdata/users/abdul", UserRating.class);
+		
 				
 		
 		
 		//for each movie id retrieved from the previous MS call send it to MovieInfo and get movie details
-		return ratingsBag.stream()                                                  //putting the list of items [emptying the bag on a] conveyor belt
+		return ratings.getUserRatings()
+				.stream()                                                 //putting the list of items [emptying the bag on a] conveyor belt
 				.map(rating -> {
 					Movie movie = restTemplate.getForObject("http://localhost:8083/movies/"+rating.getMovieId(), Movie.class);
 					return new CatalogItem(movie.getMovieName(), "description"+movie.getMovieId(), rating.getRating());              				   //converting each rating item moving on the conveyor belt TO  catalogitem
